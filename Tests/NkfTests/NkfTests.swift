@@ -10,6 +10,7 @@ let isApplePlatform = false
 @Test(
     .enabled(if: isApplePlatform),
     arguments: [
+        "Hello, World",
         "こんにちは",
         """
         メールアドレス,氏名,パスワード,種別(区分),確認機能(0:なし、1:あり)

@@ -1,8 +1,12 @@
 #pragma once
 
 #include <stdio.h>
+#include <vector>
+#include <string>
 
-unsigned char * nkf_convert(unsigned char const *in_buf,
-                            int in_size,
-                            unsigned char *opts_buf_nullterminated,
-                            int *out_size);
+#include <swift/bridging>
+
+std::vector<uint8_t> nkf_convert(const std::vector<uint8_t>& input,
+                                 const std::string& options) SWIFT_NAME(nkf_convert(input:options:));
+
+using UInt8Vector = std::vector<uint8_t>;

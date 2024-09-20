@@ -10,22 +10,13 @@ public enum Encoding: Character {
 
 public enum Nkf {
     @NkfActor public static func convert(_ string: String, encoding: Encoding) -> Data? {
-        var inputBuf = Array(string.utf8)
         let options = "-m0 --ic=UTF-8 --oc=Windows-31J"
 
-        var resultSize: Int32 = 0
-        let resultBuf = options.withCString { optionsPtr in
-            nkf_convert(
-                &inputBuf,
-                Int32(inputBuf.count),
-                UnsafeMutableRawPointer(mutating: optionsPtr),
-                &resultSize
-            )
-        }
+        let result = nkf_convert(
+            input: UInt8Vector(string.utf8),
+            options: std.string(options)
+        )
 
-        if let resultBuf {
-            return Data(bytes: resultBuf, count: Int(resultSize) - 1)
-        }
-        return nil
+        return Data(result)
     }
 }
