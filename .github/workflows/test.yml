@@ -1,0 +1,20 @@
+name: Swift Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [macos-latest, ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: vapor/swiftly-action@v0.1
+      with:
+        toolchain: latest
+    - name: Build
+      run: swift build
+    - name: Run tests
+      run: swift test
