@@ -19,7 +19,7 @@ let isApplePlatform = false
     ]
 )
 func shiftJIS(_ string: String) async throws {
-    let encoded = try #require(await Nkf.data(string, encoding: .shiftJIS))
+    let encoded = await Nkf.data(string, encoding: .shiftJIS)
     if isApplePlatform {
         let cfEncoded = try #require(string.data(using: .shiftJIS))
         #expect(cfEncoded == encoded)
@@ -27,6 +27,23 @@ func shiftJIS(_ string: String) async throws {
         let cfDecoded = String(data: encoded, encoding: .shiftJIS)
         #expect(cfDecoded == string)
     }
-    let decoded = try #require(await Nkf.string(encoded, encoding: .shiftJIS))
+    let decoded = await Nkf.string(encoded, encoding: .shiftJIS)
     #expect(decoded == string)
+}
+
+@Test(
+    "無効な文字が変換される際の挙動はよくわからない",
+    arguments: [
+        ("こんにちは、𠮷さん", "こんにちは、"),
+        ("✋Hello😃", "Hello"),
+    ]
+)
+func shiftJISSkipChars(_ string: String, _ expected: String) async throws {
+    let encoded = await Nkf.data(string, encoding: .shiftJIS)
+    if isApplePlatform {
+        let cfDecoded = String(data: encoded, encoding: .shiftJIS)
+        #expect(cfDecoded == expected)
+    }
+    let decoded = await Nkf.string(encoded, encoding: .shiftJIS)
+    #expect(decoded == expected)
 }

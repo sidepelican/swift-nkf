@@ -4,7 +4,6 @@ private import CNkf
 public struct Encoding: CustomStringConvertible, Sendable {
     public var description: String
 
-
     public static let iso2022JP = Encoding(description: "ISO-2022-JP")
     public static let shiftJIS = Encoding(description: "Shift_JIS")
     public static let cp932 = Encoding(description: "Windows-31J")
@@ -13,46 +12,38 @@ public struct Encoding: CustomStringConvertible, Sendable {
 }
 
 public enum Nkf {
-    @NkfActor public static func data(_ string: String, encoding: Encoding) -> Data? {
-        let options = "-m0 --ic=UTF-8 --oc=\(encoding)"
+    @NkfActor public static func data(_ string: String, encoding: Encoding) -> Data {
+        let options = "--ic=UTF-8 --oc=\(encoding)"
 
+        return Array(string.utf8).withUnsafeBytes {
+            convert($0, options: options)
+        }
+    }
+
+    @NkfActor public static func string(_ data: Data, encoding: Encoding) -> String {
+        let options = "--ic=\(encoding) --oc=UTF-8"
+
+        let result = data.withUnsafeBytes {
+            convert($0, options: options)
+        }
+        return String(data: result, encoding: .utf8) ?? ""
+    }
+
+    @NkfActor public static func convert(_ data: UnsafeRawBufferPointer, options: String) -> Data {
         var resultSize: Int32 = 0
         let resultBuf = options.withCString { optionsPtr in
-            var inputBuf = Array(string.utf8)
-            return nkf_convert(
-                &inputBuf,
-                Int32(inputBuf.count),
+            nkf_convert(
+                data.baseAddress,
+                Int32(data.count),
                 UnsafeMutableRawPointer(mutating: optionsPtr),
                 &resultSize
             )
         }
 
-        if let resultBuf {
-            return Data(bytes: resultBuf, count: Int(resultSize))
+        guard let resultBuf else {
+            assertionFailure("never happen")
+            return Data()
         }
-        return nil
+        return Data(bytes: resultBuf, count: Int(resultSize))
     }
-
-    @NkfActor public static func string(_ data: Data, encoding: Encoding) -> String? {
-        let options = "-m0 --ic=\(encoding) --oc=UTF-8"
-
-        var resultSize: Int32 = 0
-        let resultBuf = options.withCString { optionsPtr in
-            data.withUnsafeBytes { (dataPtr: UnsafeRawBufferPointer) in
-                nkf_convert(
-                    dataPtr.baseAddress,
-                    Int32(dataPtr.count),
-                    UnsafeMutableRawPointer(mutating: optionsPtr),
-                    &resultSize
-                )
-            }
-        }
-
-        if let resultBuf {
-            let data = Data(bytes: resultBuf, count: Int(resultSize))
-            return String(data: data, encoding: .utf8)
-        }
-        return nil
-    }
-
 }
