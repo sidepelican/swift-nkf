@@ -10,17 +10,11 @@ let package = Package(
     targets: [
         .target(
             name: "Nkf",
-            dependencies: ["CNkf"],
-            swiftSettings: [
-                .interoperabilityMode(.Cxx),
-            ]
+            dependencies: ["CNkf"]
         ),
         .testTarget(
             name: "NkfTests",
-            dependencies: ["Nkf"],
-            swiftSettings: [
-                .interoperabilityMode(.Cxx),
-            ]
+            dependencies: ["Nkf"]
         ),
         .target(
             name: "CNkf",
@@ -29,7 +23,7 @@ let package = Package(
                 "Sources/CNkf",
             ],
             publicHeadersPath: "Sources/CNkf/include",
-            cxxSettings: [
+            cSettings: [
                 .headerSearchPath("nkf"),
             ]
         )

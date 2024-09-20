@@ -31,13 +31,16 @@ extern "C" {
     }
 }
 
-std::vector<uint8_t> nkf_convert(const std::vector<uint8_t>& input,
-                                 const std::string& options) {
-    swiftnkf_ibuf = input;
+unsigned char * nkf_convert(const unsigned char *in_buf,
+                            int in_size,
+                            unsigned char *opts_buf_nullterminated,
+                            int *out_size) {
+    swiftnkf_ibuf.assign(in_buf, in_buf + in_size);
     swiftnkf_iitr = swiftnkf_ibuf.begin();
     swiftnkf_obuf = std::vector<uint8_t>();
 
-    exec_nkf(reinterpret_cast<unsigned char *>(const_cast<char *>(options.c_str())));
+    exec_nkf(opts_buf_nullterminated);
 
-    return swiftnkf_obuf;
+    *out_size = static_cast<int>(swiftnkf_obuf.size());
+    return swiftnkf_obuf.data();
 }

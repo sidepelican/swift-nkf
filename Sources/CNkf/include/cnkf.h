@@ -1,12 +1,16 @@
 #pragma once
 
 #include <stdio.h>
-#include <vector>
-#include <string>
 
-#include <swift/bridging>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-std::vector<uint8_t> nkf_convert(const std::vector<uint8_t>& input,
-                                 const std::string& options) SWIFT_NAME(nkf_convert(input:options:));
+unsigned char * nkf_convert(const unsigned char *in_buf,
+                            int in_size,
+                            unsigned char *opts_buf_nullterminated,
+                            int *out_size);
 
-using UInt8Vector = std::vector<uint8_t>;
+#ifdef __cplusplus
+}
+#endif
