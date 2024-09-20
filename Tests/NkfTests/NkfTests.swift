@@ -18,10 +18,15 @@ let isApplePlatform = false
         """,
     ]
 )
-func stringToShiftJIS(_ string: String) async throws {
-    let encoded = try #require(await Nkf.convert(string, encoding: .shiftJIS))
+func shiftJIS(_ string: String) async throws {
+    let encoded = try #require(await Nkf.data(string, encoding: .shiftJIS))
     if isApplePlatform {
-        let decoded = String(data: encoded, encoding: .shiftJIS)
-        #expect(decoded == string)
+        let cfEncoded = try #require(string.data(using: .shiftJIS))
+        #expect(cfEncoded == encoded)
+
+        let cfDecoded = String(data: encoded, encoding: .shiftJIS)
+        #expect(cfDecoded == string)
     }
+    let decoded = try #require(await Nkf.string(encoded, encoding: .shiftJIS))
+    #expect(decoded == string)
 }

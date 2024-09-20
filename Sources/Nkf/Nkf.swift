@@ -13,7 +13,7 @@ public struct Encoding: CustomStringConvertible, Sendable {
 }
 
 public enum Nkf {
-    @NkfActor public static func convert(_ string: String, encoding: Encoding) -> Data? {
+    @NkfActor public static func data(_ string: String, encoding: Encoding) -> Data? {
         let options = "-m0 --ic=UTF-8 --oc=\(encoding)"
 
         var resultSize: Int32 = 0
@@ -32,4 +32,27 @@ public enum Nkf {
         }
         return nil
     }
+
+    @NkfActor public static func string(_ data: Data, encoding: Encoding) -> String? {
+        let options = "-m0 --ic=\(encoding) --oc=UTF-8"
+
+        var resultSize: Int32 = 0
+        let resultBuf = options.withCString { optionsPtr in
+            data.withUnsafeBytes { (dataPtr: UnsafeRawBufferPointer) in
+                nkf_convert(
+                    dataPtr.baseAddress,
+                    Int32(dataPtr.count),
+                    UnsafeMutableRawPointer(mutating: optionsPtr),
+                    &resultSize
+                )
+            }
+        }
+
+        if let resultBuf {
+            let data = Data(bytes: resultBuf, count: Int(resultSize))
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
+
 }
