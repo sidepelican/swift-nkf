@@ -8,27 +8,25 @@ static std::vector<unsigned char> swiftnkf_ibuf;
 static std::vector<unsigned char>::iterator swiftnkf_iitr;
 static std::vector<unsigned char> swiftnkf_obuf;
 
-extern "C" {
-    int swiftnkf_getc(FILE *f) {
-        if (swiftnkf_iitr == swiftnkf_ibuf.end()) {
-            return EOF;
-        }
-
-        return *(swiftnkf_iitr++);
+int swiftnkf_getc(FILE *f) {
+    if (swiftnkf_iitr == swiftnkf_ibuf.end()) {
+        return EOF;
     }
     
-    int swiftnkf_ungetc(int c, FILE *f) {
-        if (swiftnkf_iitr == swiftnkf_ibuf.begin()) {
-            return EOF;
-        }
+    return *(swiftnkf_iitr++);
+}
 
-        *(--swiftnkf_iitr) = c;
-        return c;
+int swiftnkf_ungetc(int c, FILE *f) {
+    if (swiftnkf_iitr == swiftnkf_ibuf.begin()) {
+        return EOF;
     }
     
-    void swiftnkf_putchar(int c) {
-        swiftnkf_obuf.push_back(static_cast<unsigned char>(c));
-    }
+    *(--swiftnkf_iitr) = c;
+    return c;
+}
+
+void swiftnkf_putchar(int c) {
+    swiftnkf_obuf.push_back(static_cast<unsigned char>(c));
 }
 
 unsigned char * nkf_convert(const unsigned char *in_buf,
