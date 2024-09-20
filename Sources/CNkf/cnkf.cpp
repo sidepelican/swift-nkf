@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-static std::vector<uint8_t> swiftnkf_ibuf;
-static std::vector<uint8_t>::iterator swiftnkf_iitr;
-static std::vector<uint8_t> swiftnkf_obuf;
+static std::vector<unsigned char> swiftnkf_ibuf;
+static std::vector<unsigned char>::iterator swiftnkf_iitr;
+static std::vector<unsigned char> swiftnkf_obuf;
 
 extern "C" {
     int swiftnkf_getc(FILE *f) {
@@ -27,7 +27,7 @@ extern "C" {
     }
     
     void swiftnkf_putchar(int c) {
-        swiftnkf_obuf.push_back(static_cast<uint8_t>(c));
+        swiftnkf_obuf.push_back(static_cast<unsigned char>(c));
     }
 }
 
@@ -37,7 +37,7 @@ unsigned char * nkf_convert(const unsigned char *in_buf,
                             int *out_size) {
     swiftnkf_ibuf.assign(in_buf, in_buf + in_size);
     swiftnkf_iitr = swiftnkf_ibuf.begin();
-    swiftnkf_obuf = std::vector<uint8_t>();
+    swiftnkf_obuf = {};
 
     exec_nkf(opts_buf_nullterminated);
 

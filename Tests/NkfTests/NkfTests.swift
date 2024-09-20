@@ -8,7 +8,6 @@ let isApplePlatform = false
 #endif
 
 @Test(
-    .enabled(if: isApplePlatform),
     arguments: [
         "Hello, World",
         "こんにちは",
@@ -21,6 +20,8 @@ let isApplePlatform = false
 )
 func stringToShiftJIS(_ string: String) async throws {
     let encoded = try #require(await Nkf.convert(string, encoding: .shiftJIS))
-    let decoded = String(data: encoded, encoding: .shiftJIS)
-    #expect(decoded == string)
+    if isApplePlatform {
+        let decoded = String(data: encoded, encoding: .shiftJIS)
+        #expect(decoded == string)
+    }
 }
