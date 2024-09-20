@@ -1,0 +1,27 @@
+name: Swift Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v4
+    - run: sudo xcode-select -s /Applications/Xcode_16.app
+      if: matrix.os == 'macos-latest'
+    - uses: vapor/swiftly-action@v0.1
+      with:
+        toolchain: latest
+      if: matrix.os == 'ubuntu-latest'
+    - name: Build
+      run: swift build
+    - name: Run tests
+      run: swift test
